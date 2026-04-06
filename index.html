@@ -283,12 +283,12 @@
         <div class="form-group">
           <label class="form-label">販売価格（税込）</label>
           <input type="number" class="form-input" id="f-price-in" placeholder="自動計算" min="0">
-          <span class="form-hint">税別 × 1.10</span>
+          <span class="form-hint">税別 × 1.08</span>
         </div>
         <div class="form-group">
           <label class="form-label">送料込（税込・10%）</label>
           <input type="number" class="form-input" id="f-total10" placeholder="自動計算" min="0">
-          <span class="form-hint">税込 + 送料×1.10</span>
+          <span class="form-hint">税込(8%) + 送料×1.10</span>
         </div>
         <div class="form-group">
           <label class="form-label">送料込（税込・8%）</label>
@@ -356,16 +356,18 @@ async function loadData(silent = false) {
   try {
     const data = await gasGet({ action: 'getAll' });
     if (data.error) throw new Error(data.error);
-    allData = (data.rows || []).map(r => ({
-      id: r.id,
-      name: r.name || '',
-      count: r.count !== '' && r.count !== null ? Number(r.count) : null,
-      price_ex: Number(r.price_ex) || 0,
-      price_in: Number(r.price_in) || 0,
-      shipping: r.shipping !== '' && r.shipping !== null ? Number(r.shipping) : null,
-      total_in10: Number(r.total_in10) || 0,
-      total_in8: Number(r.total_in8) || 0,
-      expiry: r.expiry || ''
+    const toNum = v => { const n = parseFloat(v); return isNaN(n) ? 0 : n; };
+    const toNullNum = v => (v === '' || v === null || v === undefined) ? null : (isNaN(parseFloat(v)) ? null : parseFloat(v));
+    allData = (data.rows || []).filter(r => r.id && r.name).map(r => ({
+      id: String(r.id),
+      name: String(r.name || ''),
+      count: toNullNum(r.count),
+      price_ex: toNum(r.price_ex),
+      price_in: toNum(r.price_in),
+      shipping: toNullNum(r.shipping),
+      total_in10: toNum(r.total_in10),
+      total_in8: toNum(r.total_in8),
+      expiry: (r.expiry !== null && r.expiry !== undefined) ? String(r.expiry).trim() : ''
     }));
     updateStats();
     applyFilters();
@@ -400,11 +402,12 @@ function fmt(v) {
   return '¥' + Number(v).toLocaleString('ja-JP', { maximumFractionDigits: 1 });
 }
 function expiryTag(e) {
-  if (!e) return '<span class="tag tag-none">-</span>';
+  const s = e !== null && e !== undefined ? String(e).trim() : '';
+  if (!s) return '<span class="tag tag-none">-</span>';
   let cls = 'tag-room';
-  if (e.includes('冷凍')) cls = 'tag-freeze';
-  else if (e.includes('冷蔵')) cls = 'tag-cold';
-  return `<span class="tag ${cls}">${e}</span>`;
+  if (s.includes('冷凍')) cls = 'tag-freeze';
+  else if (s.includes('冷蔵')) cls = 'tag-cold';
+  return `<span class="tag ${cls}">${s}</span>`;
 }
 
 // ---- Stats ----
@@ -500,8 +503,8 @@ function autoCalc() {
   const ex = parseFloat(document.getElementById('f-price-ex').value) || 0;
   const ship = parseFloat(document.getElementById('f-shipping').value) || 0;
   if (ex > 0) {
-    document.getElementById('f-price-in').value = Math.round(ex * 1.10 * 10) / 10;
-    document.getElementById('f-total10').value = Math.round((ex * 1.10 + ship * 1.10) * 10) / 10;
+    document.getElementById('f-price-in').value = Math.round(ex * 1.08 * 10) / 10;
+    document.getElementById('f-total10').value = Math.round((ex * 1.08 + ship * 1.10) * 10) / 10;
     document.getElementById('f-total8').value = Math.round((ex * 1.08 + ship * 1.08) * 10) / 10;
   }
 }

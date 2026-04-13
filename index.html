@@ -230,8 +230,8 @@
           <th data-col="price_ex" class="num hide-mobile">税別価格 <span class="arr">↕</span></th>
           <th data-col="price_in" class="num">税込価格 <span class="arr">↕</span></th>
           <th data-col="shipping" class="num hide-mobile">送料(税別) <span class="arr">↕</span></th>
-          <th data-col="total_in10" class="num">送料込 10% <span class="arr">↕</span></th>
-          <th data-col="total_in8" class="num hide-mobile">送料込 8% <span class="arr">↕</span></th>
+          <th data-col="total_in8" class="num">送料込 8% <span class="arr">↕</span></th>
+          <th data-col="total_in10" class="num hide-mobile">送料込 10% <span class="arr">↕</span></th>
           <th data-col="expiry">賞味期限 <span class="arr">↕</span></th>
           <th class="no-sort hide-mobile" style="width:72px"></th>
         </tr>
@@ -286,12 +286,12 @@
           <span class="form-hint">税別 × 1.08</span>
         </div>
         <div class="form-group">
-          <label class="form-label">送料込（税込・10%）</label>
+          <label class="form-label">送料込（税込・8%）</label>
           <input type="number" class="form-input" id="f-total10" placeholder="自動計算" min="0">
           <span class="form-hint">税込(8%) + 送料×1.10</span>
         </div>
         <div class="form-group">
-          <label class="form-label">送料込（税込・8%）</label>
+          <label class="form-label">送料込（税込・10%）</label>
           <input type="number" class="form-input" id="f-total8" placeholder="自動計算" min="0">
           <span class="form-hint">税別×1.08 + 送料×1.08</span>
         </div>
@@ -466,8 +466,8 @@ function render() {
       <td class="num price-sub hide-mobile">${fmt(r.price_ex)}</td>
       <td class="num price-em">${fmt(r.price_in)}</td>
       <td class="num price-sub hide-mobile">${r.shipping !== null ? fmt(r.shipping) : '<span style="color:#ccc">-</span>'}</td>
-      <td class="num price-em">${fmt(r.total_in10)}</td>
-      <td class="num price-sub hide-mobile">${fmt(r.total_in8)}</td>
+      <td class="num price-em">${fmt(r.total_in8)}</td>
+      <td class="num price-sub hide-mobile">${fmt(r.total_in10)}</td>
       <td>${expiryTag(r.expiry)}</td>
       <td class="hide-mobile">
         <div class="row-actions">
